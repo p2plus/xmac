@@ -123,6 +123,21 @@ enum PageScript {
           }
         }
 
+        if (window.ServiceWorkerRegistration && ServiceWorkerRegistration.prototype.showNotification) {
+          ServiceWorkerRegistration.prototype.showNotification = function (title, options) {
+            try {
+              var details = options && typeof options === "object" ? options : {};
+              send({
+                type: "notify",
+                title: title == null ? "" : String(title),
+                body: details.body == null ? "" : String(details.body),
+                tag: details.tag == null ? "" : String(details.tag)
+              });
+            } catch (error) {}
+            return Promise.resolve();
+          };
+        }
+
         if (window.Notification) {
           try {
             var OriginalNotification = window.Notification;

@@ -147,8 +147,8 @@ final class WebModel: ObservableObject {
     }
 
     func load(_ url: URL, force: Bool) {
-        let target = URLClassifier.rewriteToX(url)
-        self.url = target
+        let target = URLClassifier.navigationTarget(url)
+        self.url = URLClassifier.shareable(target) ?? target
         errorMessage = nil
         hoverURL = ""
         guard let webView else {
@@ -216,16 +216,18 @@ final class WebModel: ObservableObject {
     }
 
     func noteTitle(_ newTitle: String) {
-        let clean = newTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        let clean = SurfaceText.clip(newTitle, limit: 300)
         if !clean.isEmpty { title = clean }
         badgeCount = URLClassifier.badgeCount(from: clean)
         applyDockBadge()
     }
 
     func noteURL(_ newURL: URL) {
-        url = newURL
-        guard let host = newURL.host, URLClassifier.isXFamily(host: host) else { return }
-        XMacSettings.shared.lastURLString = URLClassifier.rewriteToX(newURL).absoluteString
+        let rewritten = URLClassifier.rewriteToX(newURL)
+        url = URLClassifier.shareable(rewritten) ?? rewritten
+        if let stored = URLClassifier.persisted(rewritten) {
+            XMacSettings.shared.lastURLString = stored.absoluteString
+        }
     }
 
     func noteStarted() {
@@ -307,13 +309,14 @@ final class WebModel: ObservableObject {
     }
 
     func openInBrowser() {
-        NSWorkspace.shared.open(webView?.url ?? url)
+        guard let safe = URLClassifier.shareable(webView?.url ?? url) else { return }
+        NSWorkspace.shared.open(safe)
     }
 
     func copyLink() {
-        let value = (webView?.url ?? url).absoluteString
+        guard let safe = URLClassifier.shareable(webView?.url ?? url) else { return }
         NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(value, forType: .string)
+        NSPasteboard.general.setString(safe.absoluteString, forType: .string)
     }
 
     func clearSession() async {

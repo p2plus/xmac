@@ -15,6 +15,10 @@ struct XWebView: NSViewRepresentable {
         configuration.websiteDataStore = .default()
         configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
         configuration.preferences.isFraudulentWebsiteWarningEnabled = true
+        configuration.preferences.isElementFullscreenEnabled = true
+        configuration.preferences.tabFocusesLinks = true
+        configuration.preferences.inactiveSchedulingPolicy = .throttle
+        configuration.upgradeKnownHostsToHTTPS = true
         configuration.defaultWebpagePreferences.allowsContentJavaScript = true
 
         let contentController = WKUserContentController()
@@ -29,7 +33,7 @@ struct XWebView: NSViewRepresentable {
         webView.customUserAgent = XMac.userAgent
         webView.allowsBackForwardNavigationGestures = true
         webView.allowsMagnification = true
-        webView.isInspectable = true
+        webView.isInspectable = ProcessInfo.processInfo.environment["XMAC_INSPECT"] == "1"
         webView.appearance = XMacSettings.shared.appearance.nsAppearance
         webView.underPageBackgroundColor = XMacSettings.shared.chromeTheme.underPageColor(
             matching: webView.effectiveAppearance

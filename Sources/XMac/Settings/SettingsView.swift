@@ -69,7 +69,7 @@ struct SettingsView: View {
             }
 
             Section {
-                Text("Sign-in lives in this app's local WebKit store. No password is saved.")
+                Text("Sign-in lives in this app's local WebKit store. No password is saved. Photos and video upload through the system file panel. Camera and microphone are only offered to x.com. This Mac's location is never shared.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -86,7 +86,7 @@ struct SettingsView: View {
         }
         .formStyle(.grouped)
         .preferredColorScheme(settings.appearance.colorScheme)
-        .frame(width: 560, height: 640)
+        .frame(width: 560, height: 700)
         .confirmationDialog(
             "Delete the sign-in stored in this app?",
             isPresented: $confirmClear,

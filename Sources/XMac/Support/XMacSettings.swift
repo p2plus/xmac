@@ -38,6 +38,18 @@ final class XMacSettings: ObservableObject {
 
     @Published var lastURLString: String? {
         didSet {
+            if let lastURLString {
+                if let url = URL(string: lastURLString), let safe = URLClassifier.persisted(url) {
+                    let cleaned = safe.absoluteString
+                    if cleaned != lastURLString {
+                        self.lastURLString = cleaned
+                        return
+                    }
+                } else {
+                    self.lastURLString = nil
+                    return
+                }
+            }
             guard lastURLString != oldValue else { return }
             if let lastURLString {
                 defaults.set(lastURLString, forKey: Keys.lastURL)
@@ -111,9 +123,8 @@ final class XMacSettings: ObservableObject {
         if restoreLastURL,
            let raw = lastURLString,
            let url = URL(string: raw),
-           let host = url.host,
-           URLClassifier.isXFamily(host: host) {
-            return URLClassifier.rewriteToX(url)
+           let safe = URLClassifier.persisted(url) {
+            return safe
         }
         return startRoute.url
     }

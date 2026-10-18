@@ -41,6 +41,101 @@ final class XMacCoreTests: XCTestCase {
         XCTAssertEqual(URLClassifier.policy(for: URL(string: "https://www.google.com/search?q=x")!, isMainFrame: true), .openExternally)
         XCTAssertEqual(URLClassifier.policy(for: URL(string: "https://www.google.com/signin/v2")!, isMainFrame: true), .allow)
         XCTAssertEqual(URLClassifier.policy(for: URL(string: "https://challenges.cloudflare.com/cdn-cgi/challenge")!, isMainFrame: true), .allow)
+        XCTAssertEqual(URLClassifier.policy(for: URL(string: "https://oauth2.googleapis.com/token")!, isMainFrame: true), .allow)
+        XCTAssertEqual(URLClassifier.policy(for: URL(string: "https://account.apple.com/sign-in")!, isMainFrame: true), .allow)
+        XCTAssertEqual(URLClassifier.policy(for: URL(string: "https://login.microsoft.com/common")!, isMainFrame: true), .allow)
+    }
+
+    func testSecretsStayInsideTheApp() {
+        let callback = URL(string: "https://x.com/home?code=sekret&q=swift")!
+        let shared = URLClassifier.shareable(callback)
+        XCTAssertEqual(shared?.host, "x.com")
+        XCTAssertEqual(shared?.path, "/home")
+        XCTAssertFalse(shared?.absoluteString.contains("sekret") ?? true)
+        XCTAssertTrue(shared?.absoluteString.contains("q=swift") ?? false)
+
+        let stored = URLClassifier.persisted(URL(string: "http://mobile.twitter.com/home?access_token=abc&q=1#frag")!)
+        XCTAssertEqual(stored?.scheme, "https")
+        XCTAssertEqual(stored?.host, "x.com")
+        XCTAssertEqual(stored?.path, "/home")
+        XCTAssertNil(stored?.fragment)
+        XCTAssertFalse(stored?.absoluteString.contains("abc") ?? true)
+        XCTAssertTrue(stored?.absoluteString.contains("q=1") ?? false)
+
+        XCTAssertNil(URLClassifier.persisted(URL(string: "https://x.com/i/flow/login?code=abc")!))
+        XCTAssertNil(URLClassifier.persisted(URL(string: "https://x.com/oauth/authorize?oauth_token=abc")!))
+        XCTAssertNil(URLClassifier.persisted(URL(string: "https://x.com/logout")!))
+        XCTAssertNil(URLClassifier.persisted(URL(string: "https://example.com/home")!))
+        XCTAssertNil(URLClassifier.shareable(URL(string: "javascript:alert(1)")!))
+        XCTAssertNil(URLClassifier.shareable(URL(fileURLWithPath: "/etc/passwd")))
+
+        let withUser = URL(string: "https://user:pass@x.com/home")!
+        XCTAssertNil(URLClassifier.shareable(withUser)?.user)
+        XCTAssertFalse(URLClassifier.shareable(withUser)?.absoluteString.contains("pass") ?? true)
+
+        XCTAssertEqual(URLClassifier.shareable(URL(string: "mailto:a@b.c")!)?.scheme, "mailto")
+
+        let once = URLClassifier.persisted(URL(string: "https://x.com/home?q=swift")!)
+        XCTAssertEqual(URLClassifier.persisted(once!), once)
+
+        let navigated = URLClassifier.navigationTarget(URL(string: "https://user:pass@mobile.twitter.com/home?code=abc")!)
+        XCTAssertEqual(navigated.scheme, "https")
+        XCTAssertEqual(navigated.host, "x.com")
+        XCTAssertNil(navigated.user)
+        XCTAssertTrue(navigated.absoluteString.contains("code=abc"))
+        XCTAssertFalse(navigated.absoluteString.contains("pass"))
+    }
+
+    func testDeviceAccessStaysOnX() {
+        XCTAssertTrue(URLClassifier.mayCaptureMedia(host: "x.com"))
+        XCTAssertTrue(URLClassifier.mayCaptureMedia(host: "video.twimg.com"))
+        XCTAssertFalse(URLClassifier.mayCaptureMedia(host: "accounts.google.com"))
+        XCTAssertFalse(URLClassifier.mayCaptureMedia(host: ""))
+        XCTAssertFalse(URLClassifier.mayCaptureMedia(host: "notx.com"))
+
+        XCTAssertTrue(URLClassifier.mayOfferFilePicker(host: "x.com"))
+        XCTAssertFalse(URLClassifier.mayOfferFilePicker(host: "accounts.google.com"))
+        XCTAssertFalse(URLClassifier.mayOfferFilePicker(host: "evil.com"))
+
+        XCTAssertTrue(URLClassifier.mayPresentPageDialog(host: "x.com"))
+        XCTAssertTrue(URLClassifier.mayPresentPageDialog(host: "accounts.google.com", path: "/o/oauth2/auth"))
+        XCTAssertFalse(URLClassifier.mayPresentPageDialog(host: "ads.example.com"))
+        XCTAssertFalse(URLClassifier.mayPresentPageDialog(host: ""))
+
+        XCTAssertFalse(URLClassifier.mayReadLocation(host: "x.com"))
+        XCTAssertFalse(URLClassifier.mayReadLocation(host: "example.com"))
+    }
+
+    func testDownloadNames() {
+        XCTAssertEqual(DownloadName.sanitize("photo.jpg"), "photo.jpg")
+        XCTAssertEqual(DownloadName.sanitize("../etc/passwd"), "etcpasswd")
+        XCTAssertEqual(DownloadName.sanitize("..secret"), "secret")
+        XCTAssertEqual(DownloadName.sanitize(".hidden"), "hidden")
+        XCTAssertEqual(DownloadName.sanitize("a/b\\c:d"), "abcd")
+        XCTAssertEqual(DownloadName.sanitize("   "), "Download")
+        XCTAssertEqual(DownloadName.sanitize("...\u{0000}ok.png"), "ok.png")
+        let long = String(repeating: "a", count: 300) + ".mp4"
+        let sanitized = DownloadName.sanitize(long)
+        XCTAssertLessThanOrEqual(sanitized.count, 180)
+        XCTAssertTrue(sanitized.hasSuffix(".mp4"))
+    }
+
+    func testNotificationText() {
+        XCTAssertEqual(
+            PageEvent.parse(["type": "notify", "title": "Hi\u{0007}", "body": "There", "tag": "t"]),
+            .notify(title: "Hi", body: "There", tag: "t")
+        )
+        let spoofed = PageEvent.parse(["type": "notify", "title": "\u{202E}evil", "body": "ok", "tag": ""])
+        XCTAssertEqual(spoofed, .notify(title: "evil", body: "ok", tag: ""))
+        let huge = String(repeating: "n", count: 500)
+        let clipped = PageEvent.parse(["type": "notify", "title": huge, "body": "", "tag": huge])
+        if case .notify(let title, _, let tag) = clipped {
+            XCTAssertEqual(title.count, 120)
+            XCTAssertEqual(tag.count, 80)
+        } else {
+            XCTFail("expected a notification")
+        }
+        XCTAssertNil(PageEvent.parse(["type": "notify", "title": " \n\t ", "body": ""]))
     }
 
     func testSearchAndRoutes() {

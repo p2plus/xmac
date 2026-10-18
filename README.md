@@ -18,7 +18,19 @@ that writes `X.app` in this folder. to keep it:
 cp -R X.app /Applications/
 ```
 
-email and password are the reliable sign-in. google and apple open a second window when x asks for one.
+email and password are the reliable sign-in. google and apple open a sign-in window, and a second one when the provider asks. the session stays in this app.
+
+## what you can do
+
+after you sign in, the page is x.com. home, explore, notifications, messages, bookmarks, lists, grok, profile, replies, and posts.
+
+- photos and video upload through the system file panel. the panel only opens for x.com
+- camera and microphone are only offered to x.com, for a video or a space. macos still asks you first
+- video fullscreen works. videos do not autoplay unless you turn that off in settings
+- alerts from the open page show as mac notifications while the app is running
+- links that are not x open in your browser, with tokens stripped off the url
+
+location is off. this app does not read it and does not pass it to x.com.
 
 ## what it does
 
@@ -29,6 +41,9 @@ email and password are the reliable sign-in. google and apple open a second wind
 - dock badge from titles like `(3) Home / X`
 - downloads go to Downloads and are not opened for you
 - `twitter://` and `xmac://` open here. `https://` links from other apps stay with the browser
+- the web inspector is off. set `XMAC_INSPECT=1` if you are debugging
+
+privacy details are in [PRIVACY.md](PRIVACY.md).
 
 ## contribute
 

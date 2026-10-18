@@ -35,7 +35,9 @@ final class WebCoordinator: NSObject, WKNavigationDelegate, WKUIDelegate, WKScri
         case .cancel:
             decisionHandler(.cancel, preferences)
         case .openExternally:
-            NSWorkspace.shared.open(url)
+            if let safe = URLClassifier.shareable(url) {
+                NSWorkspace.shared.open(safe)
+            }
             decisionHandler(.cancel, preferences)
         }
     }
@@ -89,9 +91,7 @@ final class WebCoordinator: NSObject, WKNavigationDelegate, WKUIDelegate, WKScri
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         guard message.name == XMac.messageHandler else { return }
-        if let host = message.frameInfo.request.url?.host, !URLClassifier.isXFamily(host: host) {
-            return
-        }
+        guard let host = message.frameInfo.request.url?.host, URLClassifier.isXFamily(host: host) else { return }
         guard let event = PageEvent.parse(message.body) else { return }
         switch event {
         case .title(let title):
@@ -111,11 +111,23 @@ final class WebCoordinator: NSObject, WKNavigationDelegate, WKUIDelegate, WKScri
         for navigationAction: WKNavigationAction,
         windowFeatures: WKWindowFeatures
     ) -> WKWebView? {
-        if let url = navigationAction.request.url, let host = url.host, URLClassifier.isXFamily(host: host) {
-            Task { @MainActor in
-                model.load(url, force: true)
+        if let url = navigationAction.request.url {
+            switch URLClassifier.policy(for: url, isMainFrame: true) {
+            case .cancel:
+                return nil
+            case .openExternally:
+                if let safe = URLClassifier.shareable(url) {
+                    NSWorkspace.shared.open(safe)
+                }
+                return nil
+            case .allow:
+                if let host = url.host, URLClassifier.isXFamily(host: host) {
+                    Task { @MainActor in
+                        model.load(url, force: true)
+                    }
+                    return nil
+                }
             }
-            return nil
         }
         let controller = popup ?? PopupController()
         popup = controller
@@ -128,5 +140,68 @@ final class WebCoordinator: NSObject, WKNavigationDelegate, WKUIDelegate, WKScri
 
     func webViewDidClose(_ webView: WKWebView) {
         popup?.close()
+    }
+
+    func webView(
+        _ webView: WKWebView,
+        runOpenPanelWith parameters: WKOpenPanelParameters,
+        initiatedByFrame frame: WKFrameInfo,
+        completionHandler: @escaping ([URL]?) -> Void
+    ) {
+        WebChrome.openPanel(on: webView, parameters: parameters, frame: frame, completion: completionHandler)
+    }
+
+    func webView(
+        _ webView: WKWebView,
+        runJavaScriptAlertPanelWithMessage message: String,
+        initiatedByFrame frame: WKFrameInfo,
+        completionHandler: @escaping () -> Void
+    ) {
+        WebChrome.alert(on: webView.window, frame: frame, message: message, completion: completionHandler)
+    }
+
+    func webView(
+        _ webView: WKWebView,
+        runJavaScriptConfirmPanelWithMessage message: String,
+        initiatedByFrame frame: WKFrameInfo,
+        completionHandler: @escaping (Bool) -> Void
+    ) {
+        WebChrome.confirm(on: webView.window, frame: frame, message: message, completion: completionHandler)
+    }
+
+    func webView(
+        _ webView: WKWebView,
+        runJavaScriptTextInputPanelWithPrompt prompt: String,
+        defaultText: String?,
+        initiatedByFrame frame: WKFrameInfo,
+        completionHandler: @escaping (String?) -> Void
+    ) {
+        WebChrome.prompt(
+            on: webView.window,
+            frame: frame,
+            prompt: prompt,
+            defaultText: defaultText,
+            completion: completionHandler
+        )
+    }
+
+    func webView(
+        _ webView: WKWebView,
+        decideMediaCapturePermissionsFor origin: WKSecurityOrigin,
+        initiatedBy frame: WKFrameInfo,
+        type: WKMediaCaptureType
+    ) async -> WKPermissionDecision {
+        _ = frame
+        _ = type
+        return WebChrome.mediaDecision(origin: origin)
+    }
+
+    func webView(
+        _ webView: WKWebView,
+        requestGeolocationPermissionFor origin: WKSecurityOrigin,
+        initiatedBy frame: WKFrameInfo
+    ) async -> WKPermissionDecision {
+        _ = frame
+        return WebChrome.locationDecision(origin: origin)
     }
 }

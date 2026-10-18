@@ -23,11 +23,12 @@ public enum PageEvent: Equatable, Sendable {
         case "title":
             return .title(fields["title"] as? String ?? "")
         case "notify":
-            let title = (fields["title"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-            let text = fields["body"] as? String ?? ""
-            let tag = fields["tag"] as? String ?? ""
-            if title.isEmpty && text.isEmpty { return nil }
-            return .notify(title: title.isEmpty ? "X" : title, body: text, tag: tag)
+            guard let note = SurfaceText.notification(
+                title: fields["title"] as? String ?? "",
+                body: fields["body"] as? String ?? "",
+                tag: fields["tag"] as? String ?? ""
+            ) else { return nil }
+            return .notify(title: note.title, body: note.body, tag: note.tag)
         default:
             return nil
         }

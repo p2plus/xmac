@@ -1,5 +1,6 @@
 import Foundation
 import WebKit
+import XMacCore
 
 @MainActor
 final class DownloadCenter: NSObject, WKDownloadDelegate {
@@ -21,7 +22,7 @@ final class DownloadCenter: NSObject, WKDownloadDelegate {
             completionHandler(nil)
             return
         }
-        let filename = sanitizedFilename(suggestedFilename)
+        let filename = DownloadName.sanitize(suggestedFilename)
         let destination = uniqueDestination(in: directory, filename: filename)
         destinations[ObjectIdentifier(download)] = destination
         completionHandler(destination)
@@ -51,29 +52,6 @@ final class DownloadCenter: NSObject, WKDownloadDelegate {
                 fileURL: nil
             )
         }
-    }
-
-    private func sanitizedFilename(_ suggested: String) -> String {
-        let trimmed = suggested.trimmingCharacters(in: .whitespacesAndNewlines)
-        let forbidden = CharacterSet(charactersIn: "/:?%*|\"<>")
-            .union(CharacterSet(charactersIn: "\\"))
-            .union(.newlines)
-        let scalars = trimmed.unicodeScalars.filter { !forbidden.contains($0) }
-        var name = String(String.UnicodeScalarView(scalars))
-        while name.first == "." {
-            name.removeFirst()
-        }
-        name = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        if name.isEmpty || name == "." || name == ".." {
-            name = "Download"
-        }
-        if name.count > 180 {
-            name = String(name.prefix(180)).trimmingCharacters(in: .whitespacesAndNewlines)
-            if name.isEmpty || name == "." || name == ".." {
-                name = "Download"
-            }
-        }
-        return name
     }
 
     private func uniqueDestination(in directory: URL, filename: String) -> URL {
