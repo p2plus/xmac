@@ -12,7 +12,7 @@ struct MacSearchField: NSViewRepresentable {
 
     func makeNSView(context: Context) -> NSSearchField {
         let field = NSSearchField()
-        field.placeholderString = "Search"
+        field.placeholderString = String(localized: "Search", comment: "Search field placeholder")
         field.delegate = context.coordinator
         field.stringValue = text
         return field
@@ -23,6 +23,10 @@ struct MacSearchField: NSViewRepresentable {
         context.coordinator.onSubmit = onSubmit
         if field.stringValue != text {
             field.stringValue = text
+        }
+        let placeholder = String(localized: "Search", comment: "Search field placeholder")
+        if field.placeholderString != placeholder {
+            field.placeholderString = placeholder
         }
         guard focusTick > 0, focusTick != context.coordinator.lastTick else { return }
         context.coordinator.lastTick = focusTick

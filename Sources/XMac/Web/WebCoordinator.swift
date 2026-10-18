@@ -70,7 +70,9 @@ final class WebCoordinator: NSObject, WKNavigationDelegate, WKUIDelegate, WKScri
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        let url = webView.url
         Task { @MainActor in
+            PasskeyGate.prepare(for: url)
             model.noteFinished()
         }
     }

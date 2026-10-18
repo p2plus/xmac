@@ -10,9 +10,9 @@ enum AppearanceChoice: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .system: "System"
-        case .light: "Light"
-        case .dark: "Dark"
+        case .system: String(localized: "System", comment: "Appearance choice")
+        case .light: String(localized: "Light", comment: "Appearance choice")
+        case .dark: String(localized: "Dark", comment: "Appearance choice")
         }
     }
 
@@ -56,19 +56,19 @@ enum ChromeTheme: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .standard: "Standard"
-        case .ledger: "Ledger"
-        case .graphite: "Graphite"
-        case .phosphor: "Phosphor"
+        case .standard: String(localized: "Standard", comment: "Chrome theme name")
+        case .ledger: String(localized: "Ledger", comment: "Chrome theme name")
+        case .graphite: String(localized: "Graphite", comment: "Chrome theme name")
+        case .phosphor: String(localized: "Phosphor", comment: "Chrome theme name")
         }
     }
 
     var blurb: String {
         switch self {
-        case .standard: "System materials"
-        case .ledger: "Warm gray, one accent"
-        case .graphite: "Monochrome"
-        case .phosphor: "Amber on near-black"
+        case .standard: String(localized: "System materials", comment: "Chrome theme description")
+        case .ledger: String(localized: "Warm gray, one accent", comment: "Chrome theme description")
+        case .graphite: String(localized: "Monochrome", comment: "Chrome theme description")
+        case .phosphor: String(localized: "Amber on near-black", comment: "Chrome theme description")
         }
     }
 
@@ -151,10 +151,10 @@ enum NavEdge: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .leading: "Left"
-        case .trailing: "Right"
-        case .top: "Top"
-        case .bottom: "Bottom"
+        case .leading: String(localized: "Left", comment: "Navigation edge")
+        case .trailing: String(localized: "Right", comment: "Navigation edge")
+        case .top: String(localized: "Top", comment: "Navigation edge")
+        case .bottom: String(localized: "Bottom", comment: "Navigation edge")
         }
     }
 
@@ -177,12 +177,12 @@ enum RefreshChoice: Int, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .manual: "Manual"
-        case .oneMinute: "1 minute"
-        case .fiveMinutes: "5 minutes"
-        case .fifteenMinutes: "15 minutes"
-        case .thirtyMinutes: "30 minutes"
-        case .oneHour: "1 hour"
+        case .manual: String(localized: "Manual", comment: "Refresh interval")
+        case .oneMinute: String(localized: "1 minute", comment: "Refresh interval")
+        case .fiveMinutes: String(localized: "5 minutes", comment: "Refresh interval")
+        case .fifteenMinutes: String(localized: "15 minutes", comment: "Refresh interval")
+        case .thirtyMinutes: String(localized: "30 minutes", comment: "Refresh interval")
+        case .oneHour: String(localized: "1 hour", comment: "Refresh interval")
         }
     }
 

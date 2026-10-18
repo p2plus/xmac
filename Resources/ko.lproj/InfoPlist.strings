@@ -1,0 +1,5 @@
+"CFBundleDisplayName" = "X";
+"CFBundleName" = "X";
+"NSCameraUsageDescription" = "X에서 사진을 찍거나 비디오를 시작할 때 사용합니다.";
+"NSMicrophoneUsageDescription" = "X에서 오디오를 녹음할 때 사용합니다.";
+"NSHumanReadableCopyright" = "비공식 클라이언트. X Corp.와 관계없습니다.";

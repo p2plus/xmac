@@ -39,7 +39,7 @@ final class PopupController: NSObject, WKNavigationDelegate, WKUIDelegate, NSWin
             backing: .buffered,
             defer: false
         )
-        panel.title = "Sign in"
+        panel.title = String(localized: "Sign in", comment: "Authentication window title")
         panel.contentView = webView
         panel.isReleasedWhenClosed = false
         panel.isFloatingPanel = false
@@ -131,6 +131,7 @@ final class PopupController: NSObject, WKNavigationDelegate, WKUIDelegate, NSWin
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        PasskeyGate.prepare(for: webView.url)
         guard let url = webView.url, let host = url.host, URLClassifier.isXFamily(host: host) else { return }
         let path = url.path.lowercased()
         if path.contains("login") || path.contains("oauth") || path.contains("flow") { return }

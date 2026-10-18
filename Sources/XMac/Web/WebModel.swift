@@ -295,7 +295,7 @@ final class WebModel: ObservableObject {
                 if query.isEmpty || result.matchFound {
                     self.findStatus = ""
                 } else {
-                    self.findStatus = "No matches"
+                    self.findStatus = String(localized: "No matches", comment: "Find on page, nothing found")
                 }
             }
         }

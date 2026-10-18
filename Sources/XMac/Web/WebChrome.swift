@@ -21,7 +21,7 @@ enum WebChrome {
         panel.canChooseDirectories = parameters.allowsDirectories
         panel.canChooseFiles = true
         panel.resolvesAliases = true
-        panel.prompt = "Upload"
+        panel.prompt = String(localized: "Upload", comment: "File panel button")
         let finish: (NSApplication.ModalResponse) -> Void = { response in
             completion(response == .OK ? panel.urls : nil)
         }
@@ -46,7 +46,7 @@ enum WebChrome {
         alert.messageText = siteName(frame)
         alert.informativeText = SurfaceText.clip(message, limit: 500)
         alert.alertStyle = .informational
-        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: String(localized: "OK", comment: "Dialog button"))
         present(alert, on: window) { _ in completion() }
     }
 
@@ -64,8 +64,8 @@ enum WebChrome {
         alert.messageText = siteName(frame)
         alert.informativeText = SurfaceText.clip(message, limit: 500)
         alert.alertStyle = .warning
-        alert.addButton(withTitle: "OK")
-        alert.addButton(withTitle: "Cancel")
+        alert.addButton(withTitle: String(localized: "OK", comment: "Dialog button"))
+        alert.addButton(withTitle: String(localized: "Cancel", comment: "Dialog button"))
         present(alert, on: window) { response in
             completion(response == .alertFirstButtonReturn)
         }
@@ -86,8 +86,8 @@ enum WebChrome {
         alert.messageText = siteName(frame)
         alert.informativeText = SurfaceText.clip(prompt, limit: 500)
         alert.alertStyle = .informational
-        alert.addButton(withTitle: "OK")
-        alert.addButton(withTitle: "Cancel")
+        alert.addButton(withTitle: String(localized: "OK", comment: "Dialog button"))
+        alert.addButton(withTitle: String(localized: "Cancel", comment: "Dialog button"))
         let field = NSTextField(frame: NSRect(x: 0, y: 0, width: 280, height: 24))
         field.stringValue = SurfaceText.clip(defaultText ?? "", limit: 500)
         alert.accessoryView = field
@@ -113,7 +113,7 @@ enum WebChrome {
 
     private static func siteName(_ frame: WKFrameInfo) -> String {
         let host = frame.request.url?.host ?? ""
-        return host.isEmpty ? "This page says" : host
+        return host.isEmpty ? String(localized: "This page says", comment: "Dialog title when the page has no host") : host
     }
 
     private static func present(
