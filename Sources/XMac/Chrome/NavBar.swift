@@ -150,7 +150,7 @@ struct NavBar: View {
 
     private func iconButton(
         _ symbol: String,
-        help: String,
+        help: LocalizedStringKey,
         enabled: Bool = true,
         command: XMacCommand
     ) -> some View {

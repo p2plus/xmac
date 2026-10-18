@@ -179,7 +179,8 @@ struct WelcomeBanner: View {
         HStack(spacing: 12) {
             Text("Sign-in and the timeline are the real x.com page. Other links open in your browser.")
                 .font(.callout)
-                .lineLimit(2)
+                .lineLimit(4)
+                .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Button("Got it") {
                 settings.showWelcome = false

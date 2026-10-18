@@ -32,7 +32,7 @@ final class DownloadCenter: NSObject, WKDownloadDelegate {
         guard let url = destinations.removeValue(forKey: ObjectIdentifier(download)) else { return }
         Task { @MainActor in
             NotificationBridge.shared.post(
-                title: "Download",
+                title: String(localized: "Download", comment: "Notification title when a file finishes"),
                 body: url.lastPathComponent,
                 tag: url.path,
                 fileURL: url
@@ -46,7 +46,7 @@ final class DownloadCenter: NSObject, WKDownloadDelegate {
         let tag = UUID().uuidString
         Task { @MainActor in
             NotificationBridge.shared.post(
-                title: "Download failed",
+                title: String(localized: "Download failed", comment: "Notification title when a file fails"),
                 body: body,
                 tag: tag,
                 fileURL: nil

@@ -19,15 +19,15 @@ public enum AppRoute: String, CaseIterable, Identifiable, Hashable, Sendable {
 
     public var title: String {
         switch self {
-        case .home: "Home"
-        case .explore: "Explore"
-        case .notifications: "Notifications"
-        case .messages: "Messages"
-        case .bookmarks: "Bookmarks"
-        case .lists: "Lists"
-        case .grok: "Grok"
-        case .profile: "Profile"
-        case .compose: "Post"
+        case .home: String(localized: "Home", comment: "Section title")
+        case .explore: String(localized: "Explore", comment: "Section title")
+        case .notifications: String(localized: "Notifications", comment: "Section title")
+        case .messages: String(localized: "Messages", comment: "Section title")
+        case .bookmarks: String(localized: "Bookmarks", comment: "Section title")
+        case .lists: String(localized: "Lists", comment: "Section title")
+        case .grok: String(localized: "Grok", comment: "Section title")
+        case .profile: String(localized: "Profile", comment: "Section title")
+        case .compose: String(localized: "Post", comment: "Compose button")
         }
     }
 

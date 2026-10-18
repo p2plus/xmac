@@ -42,6 +42,18 @@ if [[ -f "$ICON_SRC" ]]; then
   cp "$ICON_SRC" "$APP/Contents/Resources/AppIcon.icns"
 fi
 
+echo "=== Localizations ==="
+for lang in en de fr es ja ko zh-Hans; do
+  src="Resources/${lang}.lproj"
+  if [[ ! -d "$src" ]]; then
+    echo "Missing $src" >&2
+    exit 1
+  fi
+  cp -R "$src" "$APP/Contents/Resources/"
+  plutil -lint "$APP/Contents/Resources/${lang}.lproj/Localizable.strings"
+  plutil -lint "$APP/Contents/Resources/${lang}.lproj/InfoPlist.strings"
+done
+
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -65,6 +77,18 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 	<string>AppIcon</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>LSHasLocalizedDisplayName</key>
+	<true/>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>de</string>
+		<string>fr</string>
+		<string>es</string>
+		<string>ja</string>
+		<string>ko</string>
+		<string>zh-Hans</string>
+	</array>
 	<key>LSMinimumSystemVersion</key>
 	<string>14.0</string>
 	<key>LSApplicationCategoryType</key>
