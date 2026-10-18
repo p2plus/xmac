@@ -45,7 +45,7 @@ xcode-select --install
 
 ## sign in once
 
-use your normal x account. email or username and password work. a passkey works too: macOS shows its own sheet, and the key stays in iCloud Keychain. the first time, macOS asks if this app may use passkeys. Google and Apple use a separate sign-in window inside the app; the provider may open another one.
+use your normal x account. email or username and password work. a passkey does not: this build is ad-hoc signed, so it has no application identifier, and macOS refuses the sheet before it appears. Google and Apple use a separate sign-in window inside the app; the provider may open another one.
 
 cookies stay in this app's WebKit store, so you stay signed in between launches. Safari's login does not carry over. the app does not read or save your password.
 
@@ -122,7 +122,7 @@ the compose link opens a draft. you still press Post yourself. normal `https://`
 - notifications come from the running page. there is no separate background push service after you quit.
 - Google or Apple can reject an embedded sign-in flow. if that happens, use email or username and password.
 - location is always denied. camera, microphone, and the upload picker are limited to x.com.
-- a passkey stays in the system keychain. if you say no to the prompt, email and password still sign you in.
+- a passkey needs Apple's browser entitlement, which ad-hoc signing cannot carry. email and password still sign you in.
 - Copy Link and Open in Browser pass a cleaned URL, not your login session. opening the browser may ask you to sign in there.
 
 more on cookies, permissions, and local data in [PRIVACY.md](PRIVACY.md).

@@ -69,7 +69,7 @@ struct SettingsView: View {
             }
 
             Section {
-                Text("Sign-in lives in this app's local WebKit store. No password is saved. A passkey stays in iCloud Keychain, and macOS asks before this app can use one. Photos and video upload through the system file panel. Camera and microphone are only offered to x.com. This Mac's location is never shared.")
+                Text("Sign-in lives in this app's local WebKit store. No password is saved. macOS does not open a passkey sheet in this app, so sign in with email or a username and password. Photos and video upload through the system file panel. Camera and microphone are only offered to x.com. This Mac's location is never shared.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)

@@ -4,7 +4,7 @@ The session stays in this app. Nothing here is a data feed you can export, and t
 
 - Sign-in cookies live in this app's WebKit store. Safari does not see them. This app does not see Safari's cookies.
 - The password is typed into x.com. The app does not read it, store it, or send it anywhere else.
-- A passkey is handled by macOS. The private key stays in iCloud Keychain. This app does not read it, list it, or send it anywhere. macOS asks once before the app may use passkeys, and only after an https x.com page has loaded.
+- This build cannot complete a passkey sign-in. macOS refuses the sheet because the ad-hoc signature has no application identifier. The app does not read, list, or send a passkey.
 - The last page saved on disk is an x.com address with the token, code, and password fields removed. A half-finished login page is not saved.
 - Copy Link and Open in Browser use that same cleaned address. The other app gets the link, not the session.
 - Script messages are accepted only from x.com, twitter.com, twimg.com, t.co, and pscp.tv. A blank frame or another site cannot push a notification into the app.
