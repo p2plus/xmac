@@ -49,7 +49,7 @@
 "Refresh" = "更新";
 "Data" = "データ";
 "The disk cache is wiped on launch and every 15 minutes. Cookies stay, so you stay signed in. Blocking images drops photos and avatars until you turn it off. Refresh reloads the open page and skips the composer." = "ディスクキャッシュは起動時と 15 分ごとに消去されます。Cookie は残るので、ログイン状態は維持されます。画像を止めると、解除するまで写真とアバターは表示されません。更新は開いているページを再読み込みし、作成画面は対象外です。";
-"Sign-in lives in this app's local WebKit store. No password is saved. A passkey stays in iCloud Keychain, and macOS asks before this app can use one. Photos and video upload through the system file panel. Camera and microphone are only offered to x.com. This Mac's location is never shared." = "ログイン情報はこのアプリのローカルな WebKit 保存領域にあります。パスワードは保存しません。パスキーは iCloud キーチェーンに残り、このアプリが使う前に macOS が確認します。写真とビデオはシステムのファイルパネルからアップロードします。カメラとマイクは x.com にだけ許可を求めます。この Mac の位置情報が共有されることはありません。";
+"Sign-in lives in this app's local WebKit store. No password is saved. macOS does not open a passkey sheet in this app, so sign in with email or a username and password. Photos and video upload through the system file panel. Camera and microphone are only offered to x.com. This Mac's location is never shared." = "ログイン情報はこのアプリのローカルな WebKit 保存領域にあります。パスワードは保存しません。macOS はこのアプリでパスキーのシートを開かないので、メールアドレスかユーザー名とパスワードでログインします。写真とビデオはシステムのファイルパネルからアップロードします。カメラとマイクは x.com にだけ許可を求めます。この Mac の位置情報が共有されることはありません。";
 "Sign out and delete data" = "サインアウトしてデータを削除";
 "Session" = "セッション";
 "Unofficial client. Not affiliated with X Corp." = "非公式クライアント。X Corp. とは関係ありません。";

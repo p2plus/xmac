@@ -49,7 +49,7 @@
 "Refresh" = "刷新";
 "Data" = "数据";
 "The disk cache is wiped on launch and every 15 minutes. Cookies stay, so you stay signed in. Blocking images drops photos and avatars until you turn it off. Refresh reloads the open page and skips the composer." = "磁盘缓存会在启动时以及每 15 分钟清除一次。Cookie 会保留，所以你仍处于登录状态。阻止图片后，照片和头像会消失，直到你关闭该选项。刷新会重新载入当前页面，并跳过撰写框。";
-"Sign-in lives in this app's local WebKit store. No password is saved. A passkey stays in iCloud Keychain, and macOS asks before this app can use one. Photos and video upload through the system file panel. Camera and microphone are only offered to x.com. This Mac's location is never shared." = "登录信息保存在这个 App 的本地 WebKit 存储中。不会保存密码。通行密钥留在 iCloud 钥匙串里，这个 App 使用前 macOS 会先询问。照片和视频通过系统文件面板上传。相机和麦克风只提供给 x.com。这台 Mac 的位置绝不会被共享。";
+"Sign-in lives in this app's local WebKit store. No password is saved. macOS does not open a passkey sheet in this app, so sign in with email or a username and password. Photos and video upload through the system file panel. Camera and microphone are only offered to x.com. This Mac's location is never shared." = "登录信息保存在这个 App 的本地 WebKit 存储中。不会保存密码。macOS 不会在这个 App 里打开通行密钥面板，请用邮箱或用户名和密码登录。照片和视频通过系统文件面板上传。相机和麦克风只提供给 x.com。这台 Mac 的位置绝不会被共享。";
 "Sign out and delete data" = "退出并删除数据";
 "Session" = "会话";
 "Unofficial client. Not affiliated with X Corp." = "非官方客户端。与 X Corp. 无关。";
