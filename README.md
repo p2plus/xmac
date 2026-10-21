@@ -18,7 +18,9 @@ the actual app, signed out. navigation is on the left by default. menus follow t
 
 ## get it running
 
-you need **macOS 14+** and **Xcode Command Line Tools with Swift 5.9+**. build from source for now; there is no prebuilt release to download.
+**macOS 14+.** the easy way: grab the zip from [releases](https://github.com/p2plus/xmac/releases), unzip, and drop `X.app` into Applications. the app is ad-hoc signed, so the first launch needs a right-click → **Open** — after that macOS remembers (or strip the quarantine mark yourself: `xattr -d com.apple.quarantine /Applications/X.app`). the zip is built on Apple Silicon; on an Intel Mac, build from source.
+
+for that you need **Xcode Command Line Tools with Swift 5.9+**:
 
 ```bash
 git clone https://github.com/p2plus/xmac.git
