@@ -6,6 +6,16 @@ import XMacCore
 /// A subclass decides what a new web view is and what a finished load means.
 @MainActor
 class WebRules: NSObject, WKNavigationDelegate, WKUIDelegate {
+    /// An un-gestured open can slip past the page gate; the app still caps how fast it may lean on the browser.
+    @MainActor private static var lastExternalOpen: Date?
+
+    static func openOutside(_ url: URL) {
+        let now = Date()
+        if let last = lastExternalOpen, now.timeIntervalSince(last) < 2 { return }
+        lastExternalOpen = now
+        NSWorkspace.shared.open(url)
+    }
+
     func webView(
         _ webView: WKWebView,
         decidePolicyFor navigationAction: WKNavigationAction,
@@ -24,7 +34,7 @@ class WebRules: NSObject, WKNavigationDelegate, WKUIDelegate {
             decisionHandler(.cancel, preferences)
         case .openExternally:
             if let safe = URLClassifier.shareable(url) {
-                NSWorkspace.shared.open(safe)
+                Self.openOutside(safe)
             }
             decisionHandler(.cancel, preferences)
         }

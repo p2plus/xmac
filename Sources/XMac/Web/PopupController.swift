@@ -24,6 +24,14 @@ final class PopupController: WebRules, NSWindowDelegate {
         close()
         self.onReachedX = onReachedX
 
+        // Same page gate as the main view, so the sign-in pages' windows obey it too.
+        configuration.userContentController.addUserScript(
+            PageScript.userScript(
+                pauseAutoplay: XMacSettings.shared.pauseAutoplay,
+                colorScheme: XMacSettings.shared.appearance.cssScheme
+            )
+        )
+
         let webView = WKWebView(
             frame: NSRect(x: 0, y: 0, width: 640, height: 800),
             configuration: configuration
@@ -112,7 +120,7 @@ final class PopupController: WebRules, NSWindowDelegate {
                 return nil
             case .openExternally:
                 if let safe = URLClassifier.shareable(url) {
-                    NSWorkspace.shared.open(safe)
+                    Self.openOutside(safe)
                 }
                 return nil
             case .allow:

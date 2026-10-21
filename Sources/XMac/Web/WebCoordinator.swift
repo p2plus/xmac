@@ -50,7 +50,7 @@ final class WebCoordinator: WebRules, WKScriptMessageHandler {
                 return nil
             case .openExternally:
                 if let safe = URLClassifier.shareable(url) {
-                    NSWorkspace.shared.open(safe)
+                    Self.openOutside(safe)
                 }
                 return nil
             case .allow:
