@@ -84,3 +84,9 @@
 "Sign in" = "Connexion";
 "Download" = "Téléchargement";
 "Download failed" = "Échec du téléchargement";
+
+/* Page failures */
+"No connection. Check the network and reload." = "Pas de connexion. Vérifiez le réseau et rechargez.";
+"Timed out. Reload the page." = "Délai dépassé. Rechargez la page.";
+"x.com can't be reached." = "x.com est inaccessible.";
+"The page didn't load." = "La page ne s'est pas chargée.";

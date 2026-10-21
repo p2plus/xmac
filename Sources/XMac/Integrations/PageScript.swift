@@ -40,6 +40,17 @@ enum PageScript {
             window.webkit.messageHandlers[handler].postMessage(payload);
           } catch (error) {}
         }
+        function notifyPage(title, options) {
+          try {
+            var details = options && typeof options === "object" ? options : {};
+            send({
+              type: "notify",
+              title: title == null ? "" : String(title),
+              body: details.body == null ? "" : String(details.body),
+              tag: details.tag == null ? "" : String(details.tag)
+            });
+          } catch (error) {}
+        }
 
         var lastTitle = null;
         var watchedTitle = null;
@@ -125,15 +136,7 @@ enum PageScript {
 
         if (window.ServiceWorkerRegistration && ServiceWorkerRegistration.prototype.showNotification) {
           ServiceWorkerRegistration.prototype.showNotification = function (title, options) {
-            try {
-              var details = options && typeof options === "object" ? options : {};
-              send({
-                type: "notify",
-                title: title == null ? "" : String(title),
-                body: details.body == null ? "" : String(details.body),
-                tag: details.tag == null ? "" : String(details.tag)
-              });
-            } catch (error) {}
+            notifyPage(title, options);
             return Promise.resolve();
           };
         }
@@ -142,15 +145,7 @@ enum PageScript {
           try {
             var OriginalNotification = window.Notification;
             function Shim(title, options) {
-              try {
-                var details = options && typeof options === "object" ? options : {};
-                send({
-                  type: "notify",
-                  title: title == null ? "" : String(title),
-                  body: details.body == null ? "" : String(details.body),
-                  tag: details.tag == null ? "" : String(details.tag)
-                });
-              } catch (error) {}
+              notifyPage(title, options);
             }
             Shim.prototype = OriginalNotification.prototype;
             try { Object.setPrototypeOf(Shim, OriginalNotification); } catch (error) {}

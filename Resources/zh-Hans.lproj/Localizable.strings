@@ -84,3 +84,9 @@
 "Sign in" = "登录";
 "Download" = "下载";
 "Download failed" = "下载失败";
+
+/* Page failures */
+"No connection. Check the network and reload." = "没有连接。请检查网络后重新加载。";
+"Timed out. Reload the page." = "已超时。请重新加载页面。";
+"x.com can't be reached." = "无法访问 x.com。";
+"The page didn't load." = "页面未能加载。";
