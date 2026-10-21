@@ -196,6 +196,14 @@ final class XMacCoreTests: XCTestCase {
         XCTAssertNil(PageEvent.parse("nope"))
     }
 
+    func testAuthHostListMatchesTheClassifier() {
+        XCTAssertFalse(URLClassifier.authHostList.isEmpty)
+        for host in URLClassifier.authHostList {
+            XCTAssertTrue(URLClassifier.isAuthHost(host: host), host)
+        }
+        XCTAssertFalse(URLClassifier.isAuthHost(host: "evil.com"))
+    }
+
     func testNavigationErrors() {
         XCTAssertNil(URLClassifier.classify(NSError(domain: NSURLErrorDomain, code: NSURLErrorCancelled)))
         XCTAssertNil(URLClassifier.classify(NSError(domain: "WebKitErrorDomain", code: 102)))

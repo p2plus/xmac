@@ -14,6 +14,14 @@ enum PageScript {
         scheme == "light" || scheme == "dark" ? scheme : ""
     }
 
+    /// Hosts whose pages may open a sign-in window without a click,
+    /// straight from the classifier so the two never drift apart.
+    private static var windowGateRules: String {
+        var hosts: Set<String> = ["google.com", "www.google.com"]
+        hosts.formUnion(URLClassifier.authHostList)
+        return hosts.sorted().map { "\"\($0)\"" }.joined(separator: ", ")
+    }
+
     static func source(pauseAutoplay: Bool, colorScheme: String) -> String {
         let autoplayFlag = pauseAutoplay ? "true" : "false"
         return #"""
@@ -22,10 +30,15 @@ enum PageScript {
         if (window.__xmacInstalled) return;
         window.__xmacInstalled = true;
         var host = String(location.hostname || "").toLowerCase();
-        var allowed = host === "x.com" || host.endsWith(".x.com")
-          || host === "twitter.com" || host.endsWith(".twitter.com")
-          || host === "t.co";
-        if (!allowed) return;
+        function sameSite(rule) {
+          return host === rule || host.endsWith("." + rule);
+        }
+        var isX = ["x.com", "twitter.com", "t.co"].some(sameSite);
+        var gateRules = [\#(windowGateRules)];
+        if (!isX && !gateRules.some(sameSite)) return;
+
+        installOpenGate(gateRules);
+        if (!isX) return;
 
         window.__xmacNoAutoplay = \#(autoplayFlag);
         var forcedScheme = "\#(colorScheme)";
@@ -95,6 +108,30 @@ enum PageScript {
         wrapHistory("replaceState");
         window.addEventListener("popstate", function () { setTimeout(pushTitle, 0); });
         setInterval(pushTitle, 2000);
+
+        function installOpenGate(gateRules) {
+          var originalOpen = window.open;
+          if (typeof originalOpen !== "function" || window.__xmacOpenGated) return;
+          window.__xmacOpenGated = true;
+          function gateAllowed(raw) {
+            try {
+              var parsed = new URL(raw, location.href);
+              var scheme = String(parsed.protocol || "").toLowerCase();
+              if (scheme !== "https:" && scheme !== "http:") return false;
+              var target = String(parsed.hostname || "").toLowerCase();
+              function ok(rule) { return target === rule || target.endsWith("." + rule); }
+              if (["x.com", "twitter.com"].some(ok)) return true;
+              return gateRules.some(ok);
+            } catch (error) { return false; }
+          }
+          window.open = function (url) {
+            try {
+              var gesture = navigator.userActivation && navigator.userActivation.isActive;
+              if (!gesture && !(url == null || gateAllowed(String(url)))) return null;
+            } catch (error) {}
+            return originalOpen.apply(this, arguments);
+          };
+        }
 
         function installAutoplayGate() {
           if (!window.HTMLMediaElement) return;

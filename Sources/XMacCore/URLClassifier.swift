@@ -12,7 +12,9 @@ public enum URLClassifier {
         "twitter.com", "www.twitter.com", "mobile.twitter.com", "m.twitter.com",
         "www.x.com", "mobile.x.com", "m.x.com"
     ]
-    private static let authHosts: Set<String> = [
+    /// Sign-in and bot-check hosts a main frame may land on. The page script
+    /// reuses this list to say which windows may open without a click.
+    public static let authHostList: [String] = [
         "accounts.google.com",
         "myaccount.google.com",
         "apis.google.com",
@@ -36,6 +38,8 @@ public enum URLClassifier {
         "login.microsoft.com",
         "login.windows.net"
     ]
+
+    private static let authHosts: Set<String> = Set(authHostList)
 
     /// Query names that can carry a session. They are stripped before anything is stored or handed to another app.
     private static let sensitiveQueryNames: Set<String> = [

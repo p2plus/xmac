@@ -13,9 +13,10 @@ struct XWebView: NSViewRepresentable {
     func makeNSView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .default()
-        // Only click-started windows open; un-gestured window.open stays blocked,
-        // so an embedded script cannot keep firing the default browser.
-        configuration.preferences.javaScriptCanOpenWindowsAutomatically = false
+        // Google and Apple sign-in open their window after an async hop, without a
+        // gesture WebKit would accept, so the built-in popup blocker has to stay off.
+        // The page script gates window.open instead, and external opens are rate-limited.
+        configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
         configuration.preferences.isFraudulentWebsiteWarningEnabled = true
         configuration.preferences.isElementFullscreenEnabled = true
         configuration.preferences.tabFocusesLinks = true
