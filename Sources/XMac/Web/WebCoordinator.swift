@@ -21,6 +21,8 @@ final class WebCoordinator: WebRules, WKScriptMessageHandler {
     // Public WKNavigationDelegate has no mouseDidMoveOver callback on this SDK.
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        // The page script runs in the main frame only; a sub-frame speaking its dialect is an impostor.
+        guard message.frameInfo.isMainFrame else { return }
         guard message.name == XMac.messageHandler else { return }
         guard let host = message.frameInfo.request.url?.host, URLClassifier.isXFamily(host: host) else { return }
         guard let event = PageEvent.parse(message.body) else { return }

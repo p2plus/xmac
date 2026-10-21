@@ -4,18 +4,23 @@ public enum LinkIntent {
     /// Turns an `https://x.com`, `twitter://`, or `xmac://` URL into a page this app can open.
     /// Returns nil for anything that is not X.
     public static func destination(for url: URL) -> URL? {
+        destination(for: url, depth: 0)
+    }
+
+    /// `xmac://open?url=` may unwrap exactly one layer. More nesting is a crash attempt, not a link.
+    private static func destination(for url: URL, depth: Int) -> URL? {
         switch url.scheme?.lowercased() ?? "" {
         case "http", "https":
             guard let host = url.host, URLClassifier.isXFamily(host: host) else { return nil }
             return URLClassifier.rewriteToX(url)
         case "twitter", "xmac":
-            return parseAppURL(url)
+            return parseAppURL(url, depth: depth)
         default:
             return nil
         }
     }
 
-    private static func parseAppURL(_ url: URL) -> URL? {
+    private static func parseAppURL(_ url: URL, depth: Int) -> URL? {
         let scheme = url.scheme?.lowercased() ?? ""
         let host = (url.host ?? "").lowercased()
         let parts = url.path.split(separator: "/").map(String.init)
@@ -26,8 +31,10 @@ public enum LinkIntent {
 
         let command = host.isEmpty ? (parts.first ?? "") : host
         if scheme == "xmac", command == "open" {
-            guard let raw = query("url"), let inner = URL(string: raw) else { return nil }
-            return destination(for: inner)
+            guard depth < 1,
+                  let raw = query("url"), raw.count <= 2_000,
+                  let inner = URL(string: raw) else { return nil }
+            return destination(for: inner, depth: depth + 1)
         }
 
         switch command {

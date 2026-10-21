@@ -13,7 +13,9 @@ struct XWebView: NSViewRepresentable {
     func makeNSView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .default()
-        configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
+        // Only click-started windows open; un-gestured window.open stays blocked,
+        // so an embedded script cannot keep firing the default browser.
+        configuration.preferences.javaScriptCanOpenWindowsAutomatically = false
         configuration.preferences.isFraudulentWebsiteWarningEnabled = true
         configuration.preferences.isElementFullscreenEnabled = true
         configuration.preferences.tabFocusesLinks = true

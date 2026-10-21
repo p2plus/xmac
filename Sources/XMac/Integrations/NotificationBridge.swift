@@ -7,7 +7,9 @@ final class NotificationBridge: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationBridge()
 
     @MainActor private static var recent: [String: Date] = [:]
+    @MainActor private static var posted: [Date] = []
     private static let dedupeWindow: TimeInterval = 8
+    private static let minuteCap = 5
 
     private override init() {
         super.init()
@@ -55,10 +57,14 @@ final class NotificationBridge: NSObject, UNUserNotificationCenterDelegate {
     private static func deliver(title: String, body: String, tag: String, fileURL: URL?) {
         guard XMacSettings.shared.nativeNotifications else { return }
         let now = Date()
+        // A page only gets so many banners a minute, however many tags it invents.
+        posted = posted.filter { now.timeIntervalSince($0) < 60 }
+        if posted.count >= minuteCap { return }
         recent = recent.filter { now.timeIntervalSince($0.value) < dedupeWindow }
         let key = tag.isEmpty ? "\(title)|\(body)" : tag
         if recent[key] != nil { return }
         recent[key] = now
+        posted.append(now)
 
         let content = UNMutableNotificationContent()
         content.title = title
