@@ -144,14 +144,22 @@ public enum URLClassifier {
         return components.url!
     }
 
-    /// Camera and microphone prompts are only for x.com itself.
-    public static func mayCaptureMedia(host: String) -> Bool {
-        !host.isEmpty && isXFamily(host: host)
+    /// The sites themselves, not their CDNs. Device prompts and the file panel only trust these.
+    private static let xSiteDomains = ["x.com", "twitter.com"]
+
+    public static func isXSite(host: String) -> Bool {
+        let normalized = normalizedHost(host)
+        return xSiteDomains.contains { normalized == $0 || normalized.hasSuffix("." + $0) }
     }
 
-    /// The system file panel is only for an upload that started on x.com.
+    /// Camera and microphone prompts are only for the X sites themselves, never a CDN frame.
+    public static func mayCaptureMedia(host: String) -> Bool {
+        !host.isEmpty && isXSite(host: host)
+    }
+
+    /// The system file panel is only for an upload that started on the X sites.
     public static func mayOfferFilePicker(host: String) -> Bool {
-        !host.isEmpty && isXFamily(host: host)
+        !host.isEmpty && isXSite(host: host)
     }
 
     /// Script dialogs are shown for x.com and the sign-in hosts. Other frames are dismissed.
@@ -164,21 +172,29 @@ public enum URLClassifier {
         false
     }
 
-    /// URL safe to put on the clipboard or open in another app. Query secrets are removed.
+    /// URL safe to put on the clipboard or open in another app. Query secrets are removed,
+    /// and so is a fragment that smells like an implicit-grant token.
     public static func shareable(_ url: URL) -> URL? {
         let scheme = url.scheme?.lowercased() ?? ""
         if scheme == "mailto" || scheme == "tel" || scheme == "sms" { return url }
         guard scheme == "http" || scheme == "https" else { return nil }
-        return strippingSecrets(from: url, dropFragment: false)
+        guard let cleaned = strippingSecrets(from: url, dropFragment: false) else { return nil }
+        if let fragment = cleaned.fragment?.lowercased(),
+           fragment.contains("token") || fragment.contains("secret") || fragment.contains("password") {
+            return strippingSecrets(from: url, dropFragment: true)
+        }
+        return cleaned
     }
 
     /// URL safe to write down so the next launch can reopen an X page.
-    /// Login and oauth pages are dropped so a half-finished sign-in is not restored.
+    /// Login, oauth, and account-repair pages are dropped: their paths carry one-time tokens.
     public static func persisted(_ url: URL) -> URL? {
         guard let host = url.host, isXFamily(host: host) else { return nil }
         let rewritten = rewriteToX(url)
         let path = URLComponents(url: rewritten, resolvingAgainstBaseURL: false)?.path.lowercased() ?? ""
-        if path.contains("/oauth") || path.contains("/i/flow/") || path.contains("/login") || path.contains("/logout") {
+        let volatile: Set<String> = ["/oauth", "/i/flow/", "/login", "/logout",
+                                     "password_reset", "reset_password", "/verify", "/confirm"]
+        if volatile.contains(where: path.contains) {
             return nil
         }
         guard let cleaned = strippingSecrets(from: rewritten, dropFragment: true),

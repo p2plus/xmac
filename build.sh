@@ -122,7 +122,7 @@ PLIST
 plutil -lint "$APP/Contents/Info.plist"
 
 echo "=== Ad-hoc signature ==="
-codesign --force --sign - --entitlements Entitlements.plist "$APP"
+codesign --force --sign - --options runtime --entitlements Entitlements.plist "$APP"
 codesign --verify --verbose=2 "$APP"
 
 echo "=== Done ==="

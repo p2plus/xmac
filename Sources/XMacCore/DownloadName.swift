@@ -1,11 +1,13 @@
 import Foundation
 
 public enum DownloadName {
-    /// A single path component. Slashes, controls, and leading dots are removed.
+    /// A single path component. Slashes, controls, leading dots, and bidi overrides are removed,
+    /// so the name cannot pose as a path or read backwards in Finder.
     public static func sanitize(_ suggested: String) -> String {
         let forbidden = CharacterSet(charactersIn: "/:?%*|\"<>\\")
             .union(.newlines)
             .union(.controlCharacters)
+            .union(CharacterSet(charactersIn: "\u{202A}\u{202B}\u{202C}\u{202D}\u{202E}\u{2066}\u{2067}\u{2068}\u{2069}"))
         let scalars = suggested.unicodeScalars.filter { !forbidden.contains($0) }
         var name = String(String.UnicodeScalarView(scalars))
             .trimmingCharacters(in: .whitespacesAndNewlines)

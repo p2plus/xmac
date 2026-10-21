@@ -125,7 +125,7 @@ the compose link opens a draft. you still press Post yourself. normal `https://`
 - x.com controls the page and account features. if the site changes or breaks, the wrapper can be affected too.
 - notifications come from the running page. there is no separate background push service after you quit.
 - Google or Apple can reject an embedded sign-in flow. if that happens, use email or username and password.
-- location is always denied. camera, microphone, and the upload picker are limited to x.com.
+- location is always denied. camera, microphone, and the upload picker are limited to x.com and twitter.com.
 - a passkey needs Apple's browser entitlement, which ad-hoc signing cannot carry. email and password still sign you in.
 - Copy Link and Open in Browser pass a cleaned URL, not your login session. opening the browser may ask you to sign in there.
 

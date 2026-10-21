@@ -65,9 +65,15 @@ final class XMacCoreTests: XCTestCase {
         XCTAssertNil(URLClassifier.persisted(URL(string: "https://x.com/i/flow/login?code=abc")!))
         XCTAssertNil(URLClassifier.persisted(URL(string: "https://x.com/oauth/authorize?oauth_token=abc")!))
         XCTAssertNil(URLClassifier.persisted(URL(string: "https://x.com/logout")!))
+        XCTAssertNil(URLClassifier.persisted(URL(string: "https://x.com/account/password_reset/SECRET123")!))
+        XCTAssertNil(URLClassifier.persisted(URL(string: "https://x.com/account/verify/TOKEN123")!))
         XCTAssertNil(URLClassifier.persisted(URL(string: "https://example.com/home")!))
         XCTAssertNil(URLClassifier.shareable(URL(string: "javascript:alert(1)")!))
         XCTAssertNil(URLClassifier.shareable(URL(fileURLWithPath: "/etc/passwd")))
+
+        let fragmentToken = URLClassifier.shareable(URL(string: "https://x.com/i/#access_token=abc")!)
+        XCTAssertNil(fragmentToken?.fragment)
+        XCTAssertTrue(fragmentToken?.path.hasPrefix("/i") ?? false)
 
         let withUser = URL(string: "https://user:pass@x.com/home")!
         XCTAssertNil(URLClassifier.shareable(withUser)?.user)
@@ -88,12 +94,15 @@ final class XMacCoreTests: XCTestCase {
 
     func testDeviceAccessStaysOnX() {
         XCTAssertTrue(URLClassifier.mayCaptureMedia(host: "x.com"))
-        XCTAssertTrue(URLClassifier.mayCaptureMedia(host: "video.twimg.com"))
+        XCTAssertTrue(URLClassifier.mayCaptureMedia(host: "mobile.twitter.com"))
+        XCTAssertFalse(URLClassifier.mayCaptureMedia(host: "video.twimg.com"))
         XCTAssertFalse(URLClassifier.mayCaptureMedia(host: "accounts.google.com"))
         XCTAssertFalse(URLClassifier.mayCaptureMedia(host: ""))
         XCTAssertFalse(URLClassifier.mayCaptureMedia(host: "notx.com"))
 
         XCTAssertTrue(URLClassifier.mayOfferFilePicker(host: "x.com"))
+        XCTAssertTrue(URLClassifier.mayOfferFilePicker(host: "twitter.com"))
+        XCTAssertFalse(URLClassifier.mayOfferFilePicker(host: "video.twimg.com"))
         XCTAssertFalse(URLClassifier.mayOfferFilePicker(host: "accounts.google.com"))
         XCTAssertFalse(URLClassifier.mayOfferFilePicker(host: "evil.com"))
 
@@ -114,6 +123,7 @@ final class XMacCoreTests: XCTestCase {
         XCTAssertEqual(DownloadName.sanitize("a/b\\c:d"), "abcd")
         XCTAssertEqual(DownloadName.sanitize("   "), "Download")
         XCTAssertEqual(DownloadName.sanitize("...\u{0000}ok.png"), "ok.png")
+        XCTAssertEqual(DownloadName.sanitize("evil\u{202E}gpj.exe"), "evilgpj.exe")
         let long = String(repeating: "a", count: 300) + ".mp4"
         let sanitized = DownloadName.sanitize(long)
         XCTAssertLessThanOrEqual(sanitized.count, 180)
@@ -171,6 +181,9 @@ final class XMacCoreTests: XCTestCase {
         let opened = LinkIntent.destination(for: URL(string: "xmac://open?url=https://x.com/explore")!)
         assertX(opened, path: "/explore")
         XCTAssertNil(LinkIntent.destination(for: URL(string: "xmac://open?url=https://example.com")!))
+        // one unwrap is a link, a second one is a crash attempt
+        XCTAssertNil(LinkIntent.destination(for: URL(string: "xmac://open?url=xmac://open?url=https://x.com/home")!))
+        XCTAssertNil(LinkIntent.destination(for: URL(string: "xmac://open?url=" + String(repeating: "a", count: 2_001))!))
     }
 
     func testPageEvents() {
