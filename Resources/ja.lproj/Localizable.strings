@@ -84,3 +84,9 @@
 "Sign in" = "ログイン";
 "Download" = "ダウンロード";
 "Download failed" = "ダウンロードに失敗しました";
+
+/* Page failures */
+"No connection. Check the network and reload." = "接続がありません。ネットワークを確認して再読み込みしてください。";
+"Timed out. Reload the page." = "タイムアウトしました。ページを再読み込みしてください。";
+"x.com can't be reached." = "x.com に接続できません。";
+"The page didn't load." = "ページが読み込まれませんでした。";

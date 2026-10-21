@@ -184,9 +184,15 @@ final class XMacCoreTests: XCTestCase {
     }
 
     func testNavigationErrors() {
-        XCTAssertNil(URLClassifier.navigationErrorMessage(NSError(domain: NSURLErrorDomain, code: NSURLErrorCancelled)))
-        XCTAssertNil(URLClassifier.navigationErrorMessage(NSError(domain: "WebKitErrorDomain", code: 102)))
-        XCTAssertNotNil(URLClassifier.navigationErrorMessage(NSError(domain: NSURLErrorDomain, code: NSURLErrorTimedOut)))
+        XCTAssertNil(URLClassifier.classify(NSError(domain: NSURLErrorDomain, code: NSURLErrorCancelled)))
+        XCTAssertNil(URLClassifier.classify(NSError(domain: "WebKitErrorDomain", code: 102)))
+        XCTAssertNil(URLClassifier.classify(NSError(domain: "WebKitErrorDomain", code: 204)))
+        XCTAssertEqual(URLClassifier.classify(NSError(domain: NSURLErrorDomain, code: NSURLErrorTimedOut)), .timedOut)
+        XCTAssertEqual(URLClassifier.classify(NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet)), .offline)
+        XCTAssertEqual(URLClassifier.classify(NSError(domain: NSURLErrorDomain, code: NSURLErrorNetworkConnectionLost)), .offline)
+        XCTAssertEqual(URLClassifier.classify(NSError(domain: NSURLErrorDomain, code: NSURLErrorDNSLookupFailed)), .unreachable)
+        XCTAssertEqual(URLClassifier.classify(NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotConnectToHost)), .unreachable)
+        XCTAssertEqual(URLClassifier.classify(NSError(domain: "AnythingElse", code: 7)), .generic)
     }
 
     private func assertX(_ url: URL?, path: String, file: StaticString = #filePath, line: UInt = #line) {

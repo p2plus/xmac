@@ -36,20 +36,9 @@ final class XMacSettings: ObservableObject {
         didSet { defaults.set(startRoute.rawValue, forKey: Keys.start) }
     }
 
+    /// Last page, already cleaned by `URLClassifier.persisted` before it is set.
     @Published var lastURLString: String? {
         didSet {
-            if let lastURLString {
-                if let url = URL(string: lastURLString), let safe = URLClassifier.persisted(url) {
-                    let cleaned = safe.absoluteString
-                    if cleaned != lastURLString {
-                        self.lastURLString = cleaned
-                        return
-                    }
-                } else {
-                    self.lastURLString = nil
-                    return
-                }
-            }
             guard lastURLString != oldValue else { return }
             if let lastURLString {
                 defaults.set(lastURLString, forKey: Keys.lastURL)
@@ -104,7 +93,12 @@ final class XMacSettings: ObservableObject {
         } else {
             startRoute = .home
         }
-        lastURLString = defaults.string(forKey: Keys.lastURL)
+        let stored = defaults.string(forKey: Keys.lastURL)
+        if let url = stored.flatMap(URL.init(string:)), let cleaned = URLClassifier.persisted(url) {
+            lastURLString = cleaned.absoluteString
+        } else {
+            lastURLString = nil
+        }
         appearance = AppearanceChoice.resolve(defaults.string(forKey: Keys.appearance))
         chromeTheme = ChromeTheme.resolve(defaults.string(forKey: Keys.theme))
         navEdge = NavEdge.resolve(defaults.string(forKey: Keys.navEdge))

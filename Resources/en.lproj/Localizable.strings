@@ -84,3 +84,9 @@
 "Sign in" = "Sign in";
 "Download" = "Download";
 "Download failed" = "Download failed";
+
+/* Page failures */
+"No connection. Check the network and reload." = "No connection. Check the network and reload.";
+"Timed out. Reload the page." = "Timed out. Reload the page.";
+"x.com can't be reached." = "x.com can't be reached.";
+"The page didn't load." = "The page didn't load.";

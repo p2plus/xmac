@@ -2,7 +2,7 @@
 
 PRs and issues are welcome. This is a small unofficial macOS shell around x.com.
 
-- macOS 14+, Swift 5.9. `swift test`, then `./build.sh`.
+- macOS 14+, Swift 5.9. `swift test`, then `./build.sh`. CI runs the tests on every PR.
 - Keep the app a shell. Login and the timeline stay on x.com.
 - Do not add scraping, cookie theft, private WebKit calls, or a claim that this is official.
 - UI strings live in `Resources/*.lproj` for en, de, fr, es, ja, ko, and zh-Hans. Add every new string to all seven.

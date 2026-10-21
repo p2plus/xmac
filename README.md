@@ -6,6 +6,8 @@ your timeline, messages, bookmarks, and posts are the real site. the app adds ma
 
 unofficial. not affiliated with X Corp.
 
+[![CI](https://github.com/p2plus/xmac/actions/workflows/ci.yml/badge.svg)](https://github.com/p2plus/xmac/actions/workflows/ci.yml)
+
 [get it running](#get-it-running) · [settings](#make-it-yours) · [shortcuts](#keyboard-stuff) · [privacy](PRIVACY.md) · [contributing](CONTRIBUTING.md)
 
 ## what it looks like

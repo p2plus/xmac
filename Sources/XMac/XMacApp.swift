@@ -23,27 +23,27 @@ struct XMacCommands: Commands {
 
     var body: some Commands {
         CommandGroup(replacing: .newItem) {
-            Button("New Post") { CommandBus.shared.send(.compose) }
+            Button("New Post") { CommandBus.shared.send(.route(.compose)) }
                 .keyboardShortcut("n", modifiers: .command)
             Button("New Window") { openWindow(id: "main") }
                 .keyboardShortcut("n", modifiers: [.command, .shift])
         }
         CommandGroup(after: .sidebar) {
-            Button("Home") { CommandBus.shared.send(.home) }
+            Button("Home") { CommandBus.shared.send(.route(.home)) }
                 .keyboardShortcut("1", modifiers: .command)
-            Button("Explore") { CommandBus.shared.send(.explore) }
+            Button("Explore") { CommandBus.shared.send(.route(.explore)) }
                 .keyboardShortcut("2", modifiers: .command)
-            Button("Notifications") { CommandBus.shared.send(.notifications) }
+            Button("Notifications") { CommandBus.shared.send(.route(.notifications)) }
                 .keyboardShortcut("3", modifiers: .command)
-            Button("Messages") { CommandBus.shared.send(.messages) }
+            Button("Messages") { CommandBus.shared.send(.route(.messages)) }
                 .keyboardShortcut("4", modifiers: .command)
-            Button("Bookmarks") { CommandBus.shared.send(.bookmarks) }
+            Button("Bookmarks") { CommandBus.shared.send(.route(.bookmarks)) }
                 .keyboardShortcut("5", modifiers: .command)
-            Button("Grok") { CommandBus.shared.send(.grok) }
+            Button("Grok") { CommandBus.shared.send(.route(.grok)) }
                 .keyboardShortcut("6", modifiers: .command)
-            Button("Lists") { CommandBus.shared.send(.lists) }
+            Button("Lists") { CommandBus.shared.send(.route(.lists)) }
                 .keyboardShortcut("7", modifiers: .command)
-            Button("Profile") { CommandBus.shared.send(.profile) }
+            Button("Profile") { CommandBus.shared.send(.route(.profile)) }
                 .keyboardShortcut("8", modifiers: .command)
             Divider()
             Button("Search") { CommandBus.shared.send(.searchFocus) }

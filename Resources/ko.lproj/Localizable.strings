@@ -84,3 +84,9 @@
 "Sign in" = "로그인";
 "Download" = "다운로드";
 "Download failed" = "다운로드 실패";
+
+/* Page failures */
+"No connection. Check the network and reload." = "연결이 없습니다. 네트워크를 확인하고 다시 로드하세요.";
+"Timed out. Reload the page." = "시간이 초과되었습니다. 페이지를 다시 로드하세요.";
+"x.com can't be reached." = "x.com에 연결할 수 없습니다.";
+"The page didn't load." = "페이지가 로드되지 않았습니다.";

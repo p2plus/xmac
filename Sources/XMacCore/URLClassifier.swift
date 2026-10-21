@@ -186,22 +186,31 @@ public enum URLClassifier {
         return cleaned
     }
 
-    public static func navigationErrorMessage(_ error: Error) -> String? {
+    /// Why a load failed, or nil when it is not a real failure (cancel, frame swap).
+    /// The app maps the case to localized text; this library has no strings.
+    public enum NavigationFailure: Equatable, Hashable, Sendable {
+        case offline
+        case timedOut
+        case unreachable
+        case generic
+    }
+
+    public static func classify(_ error: Error) -> NavigationFailure? {
         let ns = error as NSError
         if ns.domain == NSURLErrorDomain && ns.code == NSURLErrorCancelled { return nil }
         if ns.domain == "WebKitErrorDomain" && (ns.code == 102 || ns.code == 204) { return nil }
         switch (ns.domain, ns.code) {
         case (NSURLErrorDomain, NSURLErrorNotConnectedToInternet),
              (NSURLErrorDomain, NSURLErrorNetworkConnectionLost):
-            return "No connection. Check the network and reload."
+            return .offline
         case (NSURLErrorDomain, NSURLErrorTimedOut):
-            return "Timed out. Reload the page."
+            return .timedOut
         case (NSURLErrorDomain, NSURLErrorCannotFindHost),
              (NSURLErrorDomain, NSURLErrorCannotConnectToHost),
              (NSURLErrorDomain, NSURLErrorDNSLookupFailed):
-            return "x.com can't be reached."
+            return .unreachable
         default:
-            return "The page didn't load."
+            return .generic
         }
     }
 

@@ -1,11 +1,12 @@
 import AppKit
 import Foundation
+import XMacCore
 
 enum XMacCommand {
-    case home, explore, notifications, messages, bookmarks, lists, grok, profile
+    case route(AppRoute)
     case back, forward, reload
     case find, findNext, findPrevious
-    case compose, searchFocus
+    case searchFocus
     case zoomIn, zoomOut, zoomReset
     case openInBrowser, copyLink
     case clearSession

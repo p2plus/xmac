@@ -162,14 +162,7 @@ final class WebModel: ObservableObject {
 
     func perform(_ command: XMacCommand) {
         switch command {
-        case .home: go(.home)
-        case .explore: go(.explore)
-        case .notifications: go(.notifications)
-        case .messages: go(.messages)
-        case .bookmarks: go(.bookmarks)
-        case .lists: go(.lists)
-        case .grok: go(.grok)
-        case .profile: go(.profile)
+        case .route(let route): go(route)
         case .back: webView?.goBack()
         case .forward: webView?.goForward()
         case .reload: reload()
@@ -180,7 +173,6 @@ final class WebModel: ObservableObject {
         case .findPrevious:
             findPresented = true
             performFind(forward: false)
-        case .compose: go(.compose)
         case .searchFocus: focusSearchTick += 1
         case .zoomIn: setZoom(pageZoom + 0.1, persist: true)
         case .zoomOut: setZoom(pageZoom - 0.1, persist: true)
@@ -241,8 +233,13 @@ final class WebModel: ObservableObject {
     }
 
     func noteFailure(_ error: Error) {
-        guard let message = URLClassifier.navigationErrorMessage(error) else { return }
-        errorMessage = message
+        guard let failure = URLClassifier.classify(error) else { return }
+        errorMessage = switch failure {
+        case .offline: String(localized: "No connection. Check the network and reload.", comment: "Page failure, network down")
+        case .timedOut: String(localized: "Timed out. Reload the page.", comment: "Page failure, too slow")
+        case .unreachable: String(localized: "x.com can't be reached.", comment: "Page failure, host down")
+        case .generic: String(localized: "The page didn't load.", comment: "Page failure, anything else")
+        }
         isLoading = false
     }
 

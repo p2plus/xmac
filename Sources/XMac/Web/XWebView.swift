@@ -38,7 +38,6 @@ struct XWebView: NSViewRepresentable {
         webView.underPageBackgroundColor = XMacSettings.shared.chromeTheme.underPageColor(
             matching: webView.effectiveAppearance
         )
-        context.coordinator.webView = webView
         model.attach(webView)
         return webView
     }
