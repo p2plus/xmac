@@ -4,3 +4,6 @@ DerivedData/
 *.app
 .DS_Store
 /tmp/
+.mimosa/
+.v2c/
+.video_agent/
