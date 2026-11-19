@@ -19,7 +19,7 @@ let package = Package(
         ),
         .testTarget(
             name: "XMacTests",
-            dependencies: ["XMacCore"],
+            dependencies: ["XMacCore", "XMac"],
             path: "Tests/XMacTests"
         )
     ]

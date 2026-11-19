@@ -56,6 +56,14 @@ final class WebModel: ObservableObject {
         }
     }
 
+    /// Only the model's current view may detach it. The autoplay toggle rebuilds the
+    /// web view under a new identity; the dismantled old view then arrives after the
+    /// replacement has attached, and an unconditional detach would blank the window.
+    func detachIfCurrent(_ candidate: WKWebView?) {
+        guard candidate === webView else { return }
+        detach()
+    }
+
     func attach(_ webView: WKWebView) {
         self.webView = webView
         webView.pageZoom = pageZoom
