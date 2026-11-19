@@ -51,7 +51,7 @@ struct XWebView: NSViewRepresentable {
         nsView.configuration.userContentController.removeScriptMessageHandler(forName: XMac.messageHandler)
         coordinator.teardown()
         Task { @MainActor in
-            coordinator.model.detach()
+            coordinator.model.detachIfCurrent(nsView)
         }
     }
 }
