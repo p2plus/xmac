@@ -9,8 +9,8 @@ cd "$(dirname "$0")"
 
 APP_NAME="X"
 EXE_NAME="XMac"
-VERSION="1.0.0"
-BUILD_NUMBER="1"
+VERSION="1.0.1"
+BUILD_NUMBER="2"
 RUN=0
 if [[ "${1:-}" == "--run" ]]; then
   RUN=1
